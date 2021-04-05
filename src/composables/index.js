@@ -1,1 +1,1 @@
-export { useEmbed } from './useEmbed.js';
+export { useEmbed } from './useEmbed/useEmbed.js';
