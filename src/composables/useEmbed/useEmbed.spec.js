@@ -45,4 +45,56 @@ describe('use embed composable tests', () => {
 
     expect(wrapper.find('#embed-preview').exists()).toBe(false);
   });
+
+  test('getEmbedScriptSrc should return the src attribute of script tag in embed code', () => {
+    const wrapper = mount(Component, {
+      data: () => ({
+        embed: '<blockquote class="twitter-tweet"></blockquote><script async src="https://platform.twitter.com/widgets.js" charset="utf-8">'
+      }),
+      mocks: {
+        useEmbed
+      }
+    });
+
+    const { getEmbedScriptSrc } = useEmbed(wrapper.vm.embed);
+    const scriptSrc = getEmbedScriptSrc();
+
+    expect(scriptSrc).toBe('https://platform.twitter.com/widgets.js');
+  });
+
+  test('injectScript should mount script to the DOM', () => {
+    const wrapper = mount(Component, {
+      data: () => ({
+        embed: 'https://platform.twitter.com/widgets.js'
+      }),
+      mocks: {
+        useEmbed
+      }
+    });
+
+    const { injectScript } = useEmbed();
+    injectScript({ id: 'twitter-embed', src: 'https://platform.twitter.com/widgets.js' });
+
+    const script = document.getElementById('twitter-embed');
+
+    expect(script).toBeTruthy();
+  });
+
+  test('clearScript should remove script tag that passed as argument', () => {
+    const wrapper = mount(Component, {
+      data: () => ({
+        embed: 'https://platform.twitter.com/widgets.js'
+      }),
+      mocks: {
+        useEmbed
+      }
+    });
+
+    const { injectScript, clearScript } = useEmbed();
+    injectScript({ id: 'twitter-embed', src: 'https://platform.twitter.com/widgets.js' });
+
+    clearScript(document.getElementById('twitter-embed'));
+
+    expect(document.getElementById('twitter-embed')).toBeFalsy();
+  })
 });
